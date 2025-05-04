@@ -1,0 +1,52 @@
+def kmodn(k, n):
+    return k % n
+
+def linear_probing(key, value, arr):
+    count = 0
+    key_n = key
+    while arr[key_n] != -1:
+        count += 1
+        key_n = (key + count) % len(arr)
+    arr[key_n] = value
+
+def quadratic_probing(key, value, arr):
+    count = 0
+    key_n = key
+    while arr[key_n] != -1:
+        count += 1
+        key_n = (key + count ** 2) % len(arr)
+    arr[key_n] = value
+
+user_inp = int(input("Enter the number of clients: "))
+tele_book = [-1 for _ in range(user_inp)]
+temp = {}
+
+for i in range(user_inp):
+    x = int(input("Enter telephone number: "))
+    loc = kmodn(x, user_inp)
+    print(f"Initial location: {loc}")
+
+    if tele_book[loc] == -1:
+        tele_book[loc] = x
+    else:
+        if x in temp:
+            temp[x] += 1
+        else:
+            temp[x] = 1
+
+        print(f"Collision occurred at location {loc}")
+        print("Choose probing method:")
+        print("1. Linear Probing")
+        print("2. Quadratic Probing")
+        probe_choice = int(input("Enter your choice: "))
+
+        if probe_choice == 1:
+            linear_probing(loc, x, tele_book)
+        elif probe_choice == 2:
+            quadratic_probing(loc, x, tele_book)
+        else:
+            print("Invalid choice! Please select 1 or 2.")
+
+    print("Current telephone book:", tele_book)
+
+print("Collision count:", temp)
