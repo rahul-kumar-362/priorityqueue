@@ -1,0 +1,248 @@
+#include<iostream>
+using namespace std;
+
+class node {
+public:
+    node *leftc;
+    string word;
+    string meaning;
+    node *rightc;
+};
+
+class BST {
+private:
+    node *temp;
+    int op;
+    int comparisons;
+public:
+    node *root;
+
+    BST() {
+        root = NULL;
+        comparisons = 0;
+    }
+
+    void create();
+    void insert(node*, node*);
+    void inorder(node*);
+    void preorder(node*);
+    void postorder(node*);
+    node* search(node*, string);
+    void modify(node*, string);
+    void converse_inorder(node*);
+    void delete_node(string);
+    node* deleteRec(node*, string);
+    node* minValueNode(node*);
+    void comparison(string);
+};
+
+int main() {
+    BST B;
+    int choice;
+    string value;
+    while (1) {
+        cout << "\n----------------------------MENU----------------------------------" << endl;
+        cout << "1. Create and Insert a new_node in the binary search tree" << endl;
+        cout << "2. Display Ascending (Inorder) tree" << endl;
+        cout << "3. Display Descending (Converse Inorder) tree" << endl;
+        cout << "4. Display Postorder tree" << endl;
+        cout << "5. Search for a value in the tree & modify the meaning" << endl;
+        cout << "6. Modify the meaning in the tree" << endl;
+        cout << "7. Delete a node from the tree" << endl;
+        cout << "8. Compare a node from the tree" << endl;
+        cout << "9. Exit" << endl;
+        cout << "----------------------------------------------------------------------\n";
+        cout << "ENTER YOUR CHOICE" << endl;
+        cin >> choice;
+
+        switch (choice) {
+        case 1:
+            B.create();
+            break;
+        case 2:
+            B.inorder(B.root);
+            break;
+        case 3:
+            B.converse_inorder(B.root);
+            break;
+        case 4:
+            B.postorder(B.root);
+            break;
+        case 5:
+            cout << "Enter the value to search: ";
+            cin >> value;
+            B.search(B.root, value);
+            break;
+        case 6:
+            cout << "Enter the value to modify: ";
+            cin >> value;
+            B.modify(B.root, value);
+            break;
+        case 7:
+            cout << "Enter the word to delete: ";
+            cin >> value;
+            B.delete_node(value);
+            break;
+        case 8:
+            cout << "Enter the word for comparison: ";
+            cin >> value;
+            B.comparison(value);
+            break;
+        case 9:
+            cout << "Exiting....!" << endl;
+            exit(0);
+        }
+    }
+    return 0;
+}
+
+void BST::create() {
+    string word, meaning;
+    do {
+        temp = new node;
+        cout << "Enter the word: ";
+        cin >> word;
+        cout << "Enter the meaning: ";
+        cin >> meaning;
+
+        temp->word = word;
+        temp->meaning = meaning;
+        temp->leftc = temp->rightc = NULL;
+
+        if (root == NULL)
+            root = temp;
+        else
+            insert(root, temp);
+
+        cout << "Enter 1 to insert another node, 0 to stop: ";
+        cin >> op;
+    } while (op == 1);
+}
+
+void BST::insert(node *root, node *temp) {
+    if (temp->word < root->word) {
+        if (root->leftc == NULL)
+            root->leftc = temp;
+        else
+            insert(root->leftc, temp);
+    } else {
+        if (root->rightc == NULL)
+            root->rightc = temp;
+        else
+            insert(root->rightc, temp);
+    }
+}
+
+void BST::inorder(node *root) {
+    if (root != NULL) {
+        inorder(root->leftc);
+        cout << "\nWord : " << root->word << "\tMeaning : " << root->meaning;
+        inorder(root->rightc);
+    }
+}
+
+void BST::converse_inorder(node *root) {
+    if (root != NULL) {
+        converse_inorder(root->rightc);
+        cout << "\nWord : " << root->word << ", Meaning : " << root->meaning;
+        converse_inorder(root->leftc);
+    }
+}
+
+void BST::preorder(node *root) {
+    if (root != NULL) {
+        cout << root->word << " " << root->meaning << " ";
+        preorder(root->leftc);
+        preorder(root->rightc);
+    }
+}
+
+void BST::postorder(node *root) {
+    if (root != NULL) {
+        postorder(root->leftc);
+        postorder(root->rightc);
+        cout << "\nWord : " << root->word << ", Meaning : " << root->meaning;
+    }
+}
+
+node* BST::search(node *root, string value) {
+    if (root == NULL) {
+        cout << "Value " << value << " not found in the tree." << endl;
+        return NULL;
+    }
+    comparisons++;
+    if (root->word == value) {
+        cout << "Value " << value << " found in the tree." << endl;
+        return root;
+    } else if (value < root->word) {
+        return search(root->leftc, value);
+    } else {
+        return search(root->rightc, value);
+    }
+}
+
+void BST::modify(node *root, string value) {
+    if (root == NULL) {
+        cout << "Value " << value << " not found in the tree." << endl;
+        return;
+    }
+    if (root->word == value) {
+        cout << "Enter the updated meaning: ";
+        cin >> value;
+        root->meaning = value;
+        cout << "Value updated" << endl;
+    } else if (value < root->word) {
+        modify(root->leftc, value);
+    } else {
+        modify(root->rightc, value);
+    }
+}
+
+node* BST::minValueNode(node* root) {
+    node* currentNode = root;
+    while (currentNode && currentNode->leftc != NULL)
+        currentNode = currentNode->leftc;
+    return currentNode;
+}
+
+node* BST::deleteRec(node* root, string key) {
+    if (root == NULL) return root;
+
+    if (key < root->word)
+        root->leftc = deleteRec(root->leftc, key);
+    else if (key > root->word)
+        root->rightc = deleteRec(root->rightc, key);
+    else {
+        if (root->leftc == NULL) {
+            node* temp = root->rightc;
+            delete root;
+            return temp;
+        } else if (root->rightc == NULL) {
+            node* temp = root->leftc;
+            delete root;
+            return temp;
+        }
+
+        node* temp = minValueNode(root->rightc);
+        root->word = temp->word;
+        root->meaning = temp->meaning;
+        root->rightc = deleteRec(root->rightc, temp->word);
+    }
+    return root;
+}
+
+void BST::delete_node(string key) {
+    root = deleteRec(root, key);
+    cout << "Deleted " << key << " from the tree." << endl;
+}
+
+void BST::comparison(string word) {
+    comparisons = 0;
+    node* result = search(root, word);
+    if (result != NULL) {
+        cout << "Word found: " << result->word << ", Meaning: " << result->meaning << endl;
+        cout << "Comparisons needed to search: " << comparisons << endl;
+    } else {
+        cout << "Word not found." << endl;
+    }
+}
