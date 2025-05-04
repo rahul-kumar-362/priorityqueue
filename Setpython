@@ -1,0 +1,94 @@
+s1 = set()
+s2 = set()
+
+def display_menu():
+    print("\nSET OPERATION MENU")
+    print("1. Add elements to Set1")
+    print("2. Add elements to Set2")
+    print("3. Remove elements from Set1")
+    print("4. Remove elements from Set2")
+    print("5. Check if an element is in Set1")
+    print("6. Check if an element is in Set2")
+    print("7. Find the intersection of Set1 and Set2")
+    print("8. Find the union of Set1 and Set2")
+    print("9. Find the difference (Set1 - Set2 and Set2 - Set1)")
+    print("10. Check if Set1 is a subset of Set2")
+    print("11. Display Set1")
+    print("12. Display Set2")
+    print("13. Get the size of Set1")
+    print("14. Get the size of Set2")
+    print("0. Exit\n")
+
+while True:
+    display_menu()
+    choice = int(input("Enter your choice: "))
+
+    if choice == 1:
+        n1 = int(input("How many elements to add to Set1? "))
+        for _ in range(n1):
+            x = int(input("Enter element: "))
+            s1.add(x)
+        print("Set1 updated:", s1)
+
+    elif choice == 2:
+        n2 = int(input("How many elements to add to Set2? "))
+        for _ in range(n2):
+            y = int(input("Enter element: "))
+            s2.add(y)
+        print("Set2 updated:", s2)
+
+    elif choice == 3:
+        r = int(input("Enter element to remove from Set1: "))
+        if r in s1:
+            s1.remove(r)
+            print("Removed. Set1 now:", s1)
+        else:
+            print("Element not found in Set1.")
+
+    elif choice == 4:
+        r = int(input("Enter element to remove from Set2: "))
+        if r in s2:
+            s2.remove(r)
+            print("Removed. Set2 now:", s2)
+        else:
+            print("Element not found in Set2.")
+
+    elif choice == 5:
+        e = int(input("Enter element to check in Set1: "))
+        print(f"Element {e} is in Set1:", e in s1)
+
+    elif choice == 6:
+        e = int(input("Enter element to check in Set2: "))
+        print(f"Element {e} is in Set2:", e in s2)
+
+    elif choice == 7:
+        print("Intersection of Set1 and Set2:", s1.intersection(s2))
+
+    elif choice == 8:
+        print("Union of Set1 and Set2:", s1.union(s2))
+
+    elif choice == 9:
+        print("Set1 - Set2:", s1.difference(s2))
+        print("Set2 - Set1:", s2.difference(s1))
+
+    elif choice == 10:
+        print("Is Set1 a subset of Set2?:", s1.issubset(s2))
+
+    elif choice == 11:
+        print("Set1:", s1)
+
+    elif choice == 12:
+        print("Set2:", s2)
+
+    elif choice == 13:
+        print("Size of Set1:", len(s1))
+
+    elif choice == 14:
+        print("Size of Set2:", len(s2))
+
+    elif choice == 0:
+        print("Exiting the program.")
+        break
+
+    else:
+        print("Invalid choice. Please try again.")
