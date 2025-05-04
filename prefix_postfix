@@ -1,0 +1,115 @@
+#include<iostream>
+#include<string>
+#include<stack>
+using namespace std;
+
+class node {
+public:
+    node* left;
+    char data;
+    node* right;
+};
+
+bool isoperator(char x) {
+    return (x == '+' || x == '-' || x == '/' || x == '^' || x == '*');
+}
+
+node* newNode(char v) {
+    node* temp = new node;
+    temp->data = v;
+    temp->left = temp->right = NULL;
+    return temp;
+}
+
+node* cbt(string prefix) {
+    stack<node*> st;
+    node* t1, * t2, * t;
+    int len = prefix.length();
+    for (int i = len - 1; i >= 0; i--) {
+        if (!isoperator(prefix[i])) {
+            t = newNode(prefix[i]);
+            st.push(t);
+        }
+        else {
+            if (st.size() < 2) {
+                cout << "Invalid expression!" << endl;
+                return nullptr;
+            }
+            t = newNode(prefix[i]);
+            t1 = st.top(); st.pop();
+            t2 = st.top(); st.pop();
+            t->left = t1;
+            t->right = t2;
+            st.push(t);
+        }
+    }
+    t = st.top(); st.pop();
+    return t;
+}
+
+// Non-recursive Postorder Traversal
+void postorder(node* root) {
+    if (root == nullptr) return;
+    stack<node*> st1, st2;
+    st1.push(root);
+    while (!st1.empty()) {
+        node* curr = st1.top();
+        st1.pop();
+        st2.push(curr);
+        if (curr->left) st1.push(curr->left);
+        if (curr->right) st1.push(curr->right);
+    }
+    while (!st2.empty()) {
+        cout << st2.top()->data << " ";
+        st2.pop();
+    }
+}
+
+// Non-recursive Inorder Traversal
+void inorder(node* root) {
+    stack<node*> st;
+    node* current = root;
+    while (current != nullptr || !st.empty()) {
+        while (current != nullptr) {
+            st.push(current);
+            current = current->left;
+        }
+        current = st.top();
+        st.pop();
+        cout << current->data << " ";
+        current = current->right;
+    }
+}
+
+void deletetree(node* root) {
+    if (root == nullptr) return;
+    deletetree(root->left);
+    deletetree(root->right);
+    delete(root);
+}
+
+int main() {
+    char op;
+    string expression;
+    cout << "Enter the prefix expression: " << endl;
+    cin >> expression;
+
+    node* root = cbt(expression);
+    if (!root) return 1; // check for invalid tree
+
+    cout << "Postorder traversal of the constructed tree: " << endl;
+    postorder(root);
+
+    cout << "\nInorder traversal of the constructed tree: " << endl;
+    inorder(root);
+    cout << endl;
+
+    cout << "Do you want to delete tree (y/n): ";
+    cin >> op;
+    if (op == 'Y' || op == 'y') {
+        deletetree(root);
+        cout << "DELETED" << endl;
+    }
+    return 0;
+}
+   
