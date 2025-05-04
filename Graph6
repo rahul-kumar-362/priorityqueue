@@ -1,0 +1,78 @@
+#include<iostream>
+#include<cstring>
+#include<iomanip>
+#include<vector>
+using namespace std;
+void dfs(int node,vector<vector<int>>&adjMatrix,vector<bool>&visited,int v)
+{
+    visited[node]=true;
+    for(int i=0;i<v;i++)
+    {
+        if(adjMatrix[node][i]!=0 && !visited[i])
+        {
+            dfs(i,adjMatrix,visited,v);
+        }
+    }
+}
+int main()
+{
+    int v,w;
+    cout<<"Enter The Number of Cities : ";
+    cin>>v;
+    cin.ignore();//pata nhi kyu
+    string brr[v]; //array of string values
+    vector<vector<int>>arr(v,vector<int>(v,0));
+    cout<<"Enter City names - \n";
+    for(int i=0;i<v;i++)
+    {
+        cout<<"Enter City : ";
+        getline(cin,brr[i]);
+    }
+    for(int i=0;i<v;i++)
+    {
+        for(int j=i+1;j<v;j++)
+        {
+            cout<<"Enter 0 if no path,else enter cost between "<<brr[i]<<" and "<<brr[j]<<" : ";
+            cin>>w;
+            if(w!=0)
+            {
+                arr[i][j]=arr[j][i]=w;
+            }
+        }
+    }
+    cout<<"Adjacency Matrix\n";
+    cout<<setw(10)<<" ";
+    for(int i=0;i<v;i++)
+    {
+        cout<<setw(10)<<brr[i];
+    }
+    cout<<endl;
+    for(int i=0;i<v;i++)
+    {
+        cout<<setw(10)<<brr[i];
+        for(int j=0;j<v;j++)
+        {
+            cout<<setw(10)<<arr[i][j];
+        }
+        cout<<endl; 
+    }
+     vector<bool>visited(v,false);
+     dfs(0,arr,visited,v);
+     bool isConnected=true;
+     for(bool visit : visited)
+     {
+        if(!visit)
+        {
+            isConnected=false;
+            break;
+        }
+     }
+     if(isConnected)
+     {
+        cout<<"The Graph is connected \n";
+     }
+     else{
+        cout<<"The Graph is NOT connected";
+     }
+    return 0;
+}
