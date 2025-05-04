@@ -1,0 +1,122 @@
+#include <iostream>
+#include <limits.h>
+using namespace std;
+
+#define SIZE 15
+
+class OBST {
+    int prob[SIZE] = {};              // 🌟 Probabilities of accessing each key
+    int keys[SIZE] = {};              // 🔑 Keys (nodes of the tree)
+    int weight[SIZE][SIZE] = {};      // 🧮 Cumulative weights
+    int cost[SIZE][SIZE] = {};        // 💰 Cost of subtrees
+    int root[SIZE][SIZE] = {};        // 🌱 Root of subtrees
+    int n;                            // 📏 Number of nodes
+
+public:
+    void get_data();                 // 📥 Input keys and probabilities
+    int Min_Value(int, int);        // 🔍 Finds minimum cost root
+    void build_OBST();              // 🏗️ Builds cost, weight, and root tables
+    void build_tree();              // 🌳 Builds and prints the OBST
+    void print(int [][SIZE], int);  // 🖨️ Utility to print matrices
+};
+
+void OBST::get_data() {
+    cout << "\n📘 Optimal Binary Search Tree\n\nEnter the number of nodes: ";
+    cin >> n;
+
+    cout << "\nEnter " << n << " keys: ";
+    for (int i = 1; i <= n; i++) cin >> keys[i];
+
+    cout << "\nEnter " << n << " access probabilities: ";
+    for (int i = 1; i <= n; i++) cin >> prob[i];
+}
+
+int OBST::Min_Value(int i, int j) {
+    int k, minimum = INT_MAX;
+    for (int l = root[i][j - 1]; l <= root[i + 1][j]; l++) {
+        int temp_cost = cost[i][l - 1] + cost[l][j];
+        if (temp_cost < minimum) {
+            minimum = temp_cost;
+            k = l;
+        }
+    }
+    return k;  // 🌱 Best root index
+}
+
+void OBST::build_OBST() {
+    for (int i = 0; i < n; i++) {
+        weight[i][i] = root[i][i] = cost[i][i] = 0;
+        weight[i][i + 1] = cost[i][i + 1] = prob[i + 1];
+        root[i][i + 1] = i + 1;
+    }
+
+    weight[n][n] = root[n][n] = cost[n][n] = 0;
+
+    for (int l = 2; l <= n; l++) { // 🧱 Number of keys in subtree
+        for (int i = 0; i <= n - l; i++) {
+            int j = i + l;
+            weight[i][j] = weight[i][j - 1] + prob[j];
+            int k = Min_Value(i, j);
+            cost[i][j] = weight[i][j] + cost[i][k - 1] + cost[k][j];
+            root[i][j] = k;
+        }
+    }
+
+    cout << "\n💰 Cost Matrix:\n";
+    print(cost, n);
+
+    cout << "\n🌱 Root Matrix:\n";
+    print(root, n);
+}
+
+void OBST::build_tree() {
+    int queue[20], front = -1, rear = -1;
+    cout << "\n🌳 Optimal Binary Search Tree Built:\n";
+    cout << "Root of OBST: " << keys[root[0][n]] << "\n";
+    cout << "Total Cost: " << cost[0][n] << "\n";
+
+    cout << "\nNODE\tLEFT CHILD\tRIGHT CHILD\n";
+
+    queue[++rear] = 0;
+    queue[++rear] = n;
+
+    while (front != rear) {
+        int i = queue[++front];
+        int j = queue[++front];
+        int k = root[i][j];
+
+        cout << keys[k] << "\t";
+
+        if (root[i][k - 1] != 0) {
+            cout << keys[root[i][k - 1]] << "\t\t";
+            queue[++rear] = i;
+            queue[++rear] = k - 1;
+        } else {
+            cout << "-\t\t";
+        }
+
+        if (root[k][j] != 0) {
+            cout << keys[root[k][j]] << "\n";
+            queue[++rear] = k;
+            queue[++rear] = j;
+        } else {
+            cout << "-\n";
+        }
+    }
+}
+
+void OBST::print(int arr[][SIZE], int n) {
+    for (int i = 0; i <= n; i++) {
+        for (int j = 0; j <= n; j++)
+            cout << arr[i][j] << "\t";
+        cout << "\n";
+    }
+}
+
+int main() {
+    OBST obj;
+    obj.get_data();      // 📥 Input
+    obj.build_OBST();    // 🏗️ Build OBST
+    obj.build_tree();    // 🌳 Display tree
+    return 0;
+}
