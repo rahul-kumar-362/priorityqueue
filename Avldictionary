@@ -1,0 +1,160 @@
+#include<iostream>
+#include<string>
+using namespace std;
+class Node{
+public:
+string keyword,meaning;
+Node*left,*right;
+int height;
+Node(string k,string m)//parametrized constructor
+{
+    keyword=k;
+    meaning=m;
+    left=right=NULL;
+    height=1;
+}
+};
+int height(Node*root)
+{
+    if(!root)return 0;
+    return root->height;
+}
+int getBalance(Node*root)
+{
+    if(!root)return 0;
+    return height(root->left)-height(root->right);
+}
+//Right rotate
+Node*rightRotate(Node* y){
+Node* x=y->left;
+Node*T2=x->right;
+x->right=y;
+y->left=T2;
+//Update heights
+y->height=max(height(y->left),height(y->right))+1;
+x->height=max(height(x->left),height(x->right))+1;
+return x;
+}
+// 🔄 Left Rotate
+Node* leftRotate(Node* x) {
+    Node* y = x->right;
+    Node* T2 = y->left;
+
+    y->left = x;
+    x->right = T2;
+
+    // Update heights
+    x->height = max(height(x->left), height(x->right)) + 1;
+    y->height = max(height(y->left), height(y->right)) + 1;
+
+    return y;
+}
+
+// ✏️ Insert function with AVL balancing
+Node* insert(Node* root, string key, string meaning) {
+    if (!root) return new Node(key, meaning);
+
+    if (key < root->keyword)
+        root->left = insert(root->left, key, meaning);
+    else if (key > root->keyword)
+        root->right = insert(root->right, key, meaning);
+    else {
+        cout << "❌ Duplicate keyword not allowed!\n";
+        return root;
+    }
+
+    // Update height
+    root->height = max(height(root->left), height(root->right)) + 1;
+
+    int balance = getBalance(root);
+
+    // 🔁 Balance cases
+    // LL
+    if (balance > 1 && key < root->left->keyword)
+        return rightRotate(root);
+
+    // RR
+    if (balance < -1 && key > root->right->keyword)
+        return leftRotate(root);
+
+    // LR
+    if (balance > 1 && key > root->left->keyword) {
+        root->left = leftRotate(root->left);
+        return rightRotate(root);
+    }
+
+    // RL
+    if (balance < -1 && key < root->right->keyword) {
+        root->right = rightRotate(root->right);
+        return leftRotate(root);
+    }
+
+    return root;
+}
+
+// 🔍 Search
+void search(Node* root, string key) {
+    if (!root) {
+        cout << "🔎 Not found!\n";
+        return;
+    }
+
+    if (key == root->keyword)
+        cout << "✅ Found! Meaning: " << root->meaning << endl;
+    else if (key < root->keyword)
+        search(root->left, key);
+    else
+        search(root->right, key);
+}
+
+// 📜 Inorder Traversal (sorted dictionary)
+void inorder(Node* root) {
+    if (!root) return;
+    inorder(root->left);
+    cout << root->keyword << " : " << root->meaning << endl;
+    inorder(root->right);
+}
+
+int main() {
+    Node* root = nullptr;
+    int choice;
+    string key, meaning;
+
+    do {
+        cout << "\n📘 Dictionary Menu\n";
+        cout << "1. Insert\n2. Display (Inorder)\n3. Search\n4. Exit\n";
+        cout << "Enter your choice: ";
+        cin >> choice;
+
+        switch (choice) {
+            case 1:
+                cout << "Enter keyword: ";
+                cin >> key;
+                cout << "Enter meaning: ";
+                cin.ignore();
+                getline(cin, meaning);
+                root = insert(root, key, meaning);
+                break;
+
+            case 2:
+                cout << "\n📖 Dictionary (Sorted Order):\n";
+                inorder(root);
+                break;
+
+            case 3:
+                cout << "Enter keyword to search: ";
+                cin >> key;
+                search(root, key);
+                break;
+
+            case 4:
+                cout << "👋 Exiting...\n";
+                break;
+
+            default:
+                cout << "❌ Invalid choice!\n";
+        }
+    } while (choice != 4);
+
+    return 0;
+}
