@@ -1,0 +1,164 @@
+#include<iostream>
+using namespace std;
+
+class node {
+public:
+    node *leftc;
+    int data;
+    node *rightc;
+};
+
+class binarytree {
+private:
+    node *temp;
+    int op;
+
+public:
+    node *root;
+
+    binarytree() {
+        root = NULL;
+    }
+
+    void create();
+    void insert(node*, node*);
+    void inorder(node*);
+    void preorder(node*);
+    void postorder(node*);
+    void search(node*, int);
+    int height(node*);
+};
+
+int main() {
+    binarytree B;
+    int choice;
+
+    while(1) {
+        cout << "\nMENU" << endl;
+        cout << "1. Create a binary search tree" << endl;
+        cout << "2. Insert a new node" << endl;
+        cout << "3. Display Inorder traversal" << endl;
+        cout << "4. Display Preorder traversal" << endl;
+        cout << "5. Display Postorder traversal" << endl;
+        cout << "6. Search for a value" << endl;
+        cout << "7. Find height of the tree" << endl;
+        cout << "8. Exit" << endl;
+        cout << "Enter your choice: ";
+        cin >> choice;
+
+        switch(choice) {
+            case 1:
+            case 2:
+                B.create();
+                break;
+            case 3:
+                B.inorder(B.root);
+                cout << endl;
+                break;
+            case 4:
+                B.preorder(B.root);
+                cout << endl;
+                break;
+            case 5:
+                B.postorder(B.root);
+                cout << endl;
+                break;
+            case 6:
+                int value;
+                cout << "Enter value to search: ";
+                cin >> value;
+                B.search(B.root, value);
+                break;
+            case 7:
+                cout << "Height of the tree: " << B.height(B.root) << endl;
+                break;
+            case 8:
+                cout << "Exiting...!" << endl;
+                exit(0);
+            default:
+                cout << "Invalid choice!" << endl;
+        }
+    }
+
+    return 0;
+}
+
+void binarytree::create() {
+    int value;
+    do {
+        temp = new node;
+        cout << "Enter the value: ";
+        cin >> value;
+        temp->data = value;
+        temp->leftc = temp->rightc = NULL;
+
+        if (root == NULL)
+            root = temp;
+        else
+            insert(root, temp);
+
+        cout << "Enter 1 to insert another node, 0 to stop: ";
+        cin >> op;
+    } while(op == 1);
+}
+
+void binarytree::insert(node *root, node *temp) {
+    if (temp->data < root->data) {
+        if (root->leftc == NULL)
+            root->leftc = temp;
+        else
+            insert(root->leftc, temp);
+    } else {
+        if (root->rightc == NULL)
+            root->rightc = temp;
+        else
+            insert(root->rightc, temp);
+    }
+}
+
+void binarytree::inorder(node *root) {
+    if (root != NULL) {
+        inorder(root->leftc);
+        cout << root->data << " ";
+        inorder(root->rightc);
+    }
+}
+
+void binarytree::preorder(node *root) {
+    if (root != NULL) {
+        cout << root->data << " ";
+        preorder(root->leftc);
+        preorder(root->rightc);
+    }
+}
+
+void binarytree::postorder(node *root) {
+    if (root != NULL) {
+        postorder(root->leftc);
+        postorder(root->rightc);
+        cout << root->data << " ";
+    }
+}
+
+void binarytree::search(node *root, int value) {
+    if (root == NULL) {
+        cout << "Value " << value << " not found in the tree." << endl;
+        return;
+    }
+    if (root->data == value) {
+        cout << "Value " << value << " found in the tree." << endl;
+        return;
+    }
+    if (value < root->data)
+        search(root->leftc, value);
+    else
+        search(root->rightc, value);
+}
+
+int binarytree::height(node *root) {
+    if (root == NULL)
+        return -1;
+    int leftHeight = height(root->leftc);
+    int rightHeight = height(root->rightc);
+    return max(leftHeight, rightHeight) + 1;
+}
