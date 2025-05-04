@@ -1,0 +1,121 @@
+#include <iostream>
+using namespace std;
+
+class Patient {
+public:
+    string name;
+    int priority;
+
+    Patient() {
+        name = "";
+        priority = 0;
+    }
+
+    Patient(string n, int p) {
+        name = n;
+        priority = p;
+    }
+};
+
+class PriorityQueue {
+    Patient queue[100];
+    int size;
+
+public:
+    PriorityQueue() {
+        size = 0;
+    }
+
+    void insert(string name, int priority) {
+        if (size == 100) {
+            cout << "Queue is full! ❌\n";
+            return;
+        }
+
+        Patient newPatient(name, priority);
+        int i = size - 1;
+
+        while (i >= 0 && queue[i].priority > priority) {
+            queue[i + 1] = queue[i];
+            i--;
+        }
+
+        queue[i + 1] = newPatient;
+        size++;
+        cout << "✅ Inserted: " << name << " (Priority " << priority << ")\n";
+    }
+
+    void deletePatient() {
+        if (size == 0) {
+            cout << "Queue is empty! ❌\n";
+            return;
+        }
+
+        cout << "🩺 Serving: " << queue[0].name << " (Priority " << queue[0].priority << ")\n";
+
+        for (int i = 1; i < size; i++) {
+            queue[i - 1] = queue[i];
+        }
+        size--;
+    }
+
+    void display() {
+        if (size == 0) {
+            cout << "No patients in queue.\n";
+            return;
+        }
+
+        cout << "\n📋 Patient Queue:\n";
+        for (int i = 0; i < size; i++) {
+            string level;
+            if (queue[i].priority == 1)
+                level = "Serious";
+            else if (queue[i].priority == 2)
+                level = "Non-Serious";
+            else
+                level = "General";
+
+            cout << i + 1 << ". " << queue[i].name << " - " << level << endl;
+        }
+    }
+};
+
+int main() {
+    PriorityQueue pq;
+    int choice;
+    string name;
+    int priority;
+
+    do {
+        cout << "\n--- 🏥 HOSPITAL MENU ---\n";
+        cout << "1. Add Patient\n";
+        cout << "2. Serve Patient\n";
+        cout << "3. Show Queue\n";
+        cout << "4. Exit\n";
+        cout << "Enter choice: ";
+        cin >> choice;
+
+        switch (choice) {
+        case 1:
+            cout << "Enter name: ";
+            cin >> name;
+            cout << "Enter priority (1 = Serious, 2 = Non-Serious, 3 = General): ";
+            cin >> priority;
+            pq.insert(name, priority);
+            break;
+        case 2:
+            pq.deletePatient();
+            break;
+        case 3:
+            pq.display();
+            break;
+        case 4:
+            cout << "Goodbye! 👋\n";
+            break;
+        default:
+            cout << "Invalid choice! Try again.\n";
+        }
+    } while (choice != 4);
+
+    return 0;
+}

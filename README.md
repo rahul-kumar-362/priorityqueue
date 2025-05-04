@@ -1,2 +1,0 @@
-# priorityqueue
-DSA PRACTICAL10
